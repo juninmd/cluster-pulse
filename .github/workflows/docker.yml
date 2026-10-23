@@ -1,32 +1,14 @@
-name: Build & Push Docker image
+name: Build and Push Docker Image
 
 on:
   push:
-    branches: [main, master, "agent/**"]
+    branches: [main]
   workflow_dispatch:
 
-env:
-  IMAGE: ghcr.io/juninmd/cluster-pulse
-
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - uses: actions/checkout@v4
-      - name: Log in to GHCR
-        uses: docker/login-action@v4
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and push
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          push: true
-          tags: |
-            ${{ env.IMAGE }}:latest
-            ${{ env.IMAGE }}:${{ github.sha }}
+  docker:
+    uses: juninmd/base-actions/.github/workflows/reusable-docker-build.yml@main
+    with:
+      image-name: ${{ github.repository }}
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
