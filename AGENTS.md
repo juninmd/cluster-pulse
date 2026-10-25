@@ -23,3 +23,15 @@ Bun + TypeScript (sem build step) + Hono. Única dependência de runtime: `hono`
 - Não adicionar banco ou estado persistente: o design é efêmero de propósito.
 - Não iniciar o loop do monitor em import (quebra os testes); mantenha em `import.meta.main`.
 - Não editar `bun.lock` à mão; use `bun install`.
+
+<!-- base-actions-main-policy -->
+## GitHub Actions — padrão obrigatório (@main)
+
+- Referencie as actions internas sempre pelo branch, nunca por SHA:
+  - `uses: juninmd/base-actions/<action>@main`
+  - `uses: juninmd/base-actions/.github/workflows/<arquivo>.yml@main`
+- Não fixe `@<sha>` em `juninmd/base-actions`: a atualização é centralizada no
+  `main` e passa a valer no próximo run.
+- PRs cujos checks não iniciam por billing/spending limit são mesclados pelo bot central
+  `juninmd/base-actions/.github/workflows/auto-merge-billing-blocked.yml`.
+  Para impedir o merge automático de um PR, aplique a label `do-not-merge`.
