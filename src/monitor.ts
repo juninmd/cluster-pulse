@@ -1,6 +1,6 @@
 import { config, type Target } from "./config";
 import { httpCheck, tlsCheck } from "./checks";
-import { notify } from "./telegram";
+import { escapeHtml, notify } from "./telegram";
 
 export interface TargetState {
   name: string;
@@ -68,7 +68,7 @@ export class Monitor {
       if (tlsRes.daysLeft !== null && tlsRes.daysLeft <= config.tlsWarnDays) {
         if (!this.tlsWarned.has(t.url)) {
           this.tlsWarned.add(t.url);
-          await notify(`🔐 <b>${t.name}</b> TLS expira em <b>${tlsRes.daysLeft}d</b> (${t.host})`);
+          await notify(`🔐 <b>${escapeHtml(t.name)}</b> TLS expira em <b>${tlsRes.daysLeft}d</b> (${escapeHtml(t.host)})`);
         }
       } else {
         this.tlsWarned.delete(t.url);
@@ -78,9 +78,9 @@ export class Monitor {
     // Alert on state transition only (avoids spam).
     if (wasUp !== null && wasUp !== http.ok) {
       if (http.ok) {
-        await notify(`✅ <b>${t.name}</b> voltou (${http.status}, ${http.latencyMs}ms)`);
+        await notify(`✅ <b>${escapeHtml(t.name)}</b> voltou (${http.status}, ${http.latencyMs}ms)`);
       } else {
-        await notify(`🔴 <b>${t.name}</b> caiu — ${http.error ?? "HTTP " + http.status} (${t.url})`);
+        await notify(`🔴 <b>${escapeHtml(t.name)}</b> caiu — ${escapeHtml(http.error ?? "HTTP " + http.status)} (${escapeHtml(t.url)})`);
       }
     }
   }

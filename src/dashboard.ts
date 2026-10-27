@@ -45,6 +45,9 @@ function spark(history) {
     return '<i class="' + (up?'':'d') + '" style="height:' + h + 'px"></i>';
   }).join('') + '</div>';
 }
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; });
+}
 function tlsLabel(d) {
   if (d === null || d === undefined) return '';
   var cls = d <= 7 ? 'tls-crit' : d <= 14 ? 'tls-warn' : '';
@@ -61,8 +64,8 @@ async function load() {
     grid.innerHTML = data.targets.map(function(t){
       var cls = t.up === null ? 'unknown' : t.up ? 'up' : 'down';
       return '<div class="card">' +
-        '<div class="row"><span class="name"><span class="dot ' + cls + '"></span> ' + t.name + '</span>' +
-        '<span class="meta">' + (t.up ? t.latencyMs + 'ms' : (t.error || 'down')) + '</span></div>' +
+        '<div class="row"><span class="name"><span class="dot ' + cls + '"></span> ' + esc(t.name) + '</span>' +
+        '<span class="meta">' + (t.up ? t.latencyMs + 'ms' : esc(t.error || 'down')) + '</span></div>' +
         '<div class="meta"><span>HTTP ' + (t.status||'-') + '</span><span>uptime ' + t.uptimePct + '%</span>' + tlsLabel(t.tlsDaysLeft) + '</div>' +
         spark(t.history) +
       '</div>';
